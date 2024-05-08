@@ -11,10 +11,6 @@ import com.oelnooc.earthquakesretriever.data.ui.viewmodels.RegistryViewModel
 
 class RegistryFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = RegistryFragment()
-    }
-
     private lateinit var viewModel: RegistryViewModel
 
     override fun onCreateView(
@@ -23,11 +19,4 @@ class RegistryFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_registry, container, false)
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(RegistryViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }
