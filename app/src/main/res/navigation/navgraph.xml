@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navgraph"
+    app:startDestination="@id/loginFragment2">
+
+    <fragment
+        android:id="@+id/loginFragment2"
+        android:name="com.oelnooc.earthquakesretriever.data.ui.views.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment2_to_registryFragment"
+            app:destination="@id/registryFragment" />
+        <action
+            android:id="@+id/action_loginFragment2_to_eventMapFragment"
+            app:destination="@id/eventMapFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registryFragment"
+        android:name="com.oelnooc.earthquakesretriever.data.ui.views.RegistryFragment"
+        android:label="fragment_registry"
+        tools:layout="@layout/fragment_registry" >
+        <action
+            android:id="@+id/action_registryFragment_to_loginFragment2"
+            app:destination="@id/loginFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventMapFragment"
+        android:name="com.oelnooc.earthquakesretriever.data.ui.views.EventMapFragment"
+        android:label="fragment_event_map"
+        tools:layout="@layout/fragment_event_map" />
+</navigation>
