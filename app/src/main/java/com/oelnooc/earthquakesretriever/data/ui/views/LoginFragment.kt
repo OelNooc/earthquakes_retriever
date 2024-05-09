@@ -1,17 +1,18 @@
 package com.oelnooc.earthquakesretriever.data.ui.views
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.oelnooc.earthquakesretriever.R
 import com.oelnooc.earthquakesretriever.data.ui.viewmodels.LoginViewModel
+import com.oelnooc.earthquakesretriever.data.ui.viewmodels.LoginViewModelFactory
 import com.oelnooc.earthquakesretriever.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
@@ -25,11 +26,16 @@ class LoginFragment : Fragment() {
     ): View? {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        val sharedPreferences = requireActivity().getSharedPreferences("UserData", Context.MODE_PRIVATE)
+        val factory = LoginViewModelFactory(sharedPreferences)
+        viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)
 
         with(binding) {
             logBtn.setOnClickListener {
-                viewModel.onLoginButtonClicked()
+                val username = nameEt.text.toString().trim()
+                val password = passEt.text.toString().trim()
+
+                viewModel.onLoginButtonClicked(username, password)
                 viewModel.navigateToEventMap.observe(viewLifecycleOwner, Observer { navigate ->
                     if (navigate) {
                         findNavController().navigate(R.id.action_loginFragment2_to_eventMapFragment)
@@ -48,6 +54,13 @@ class LoginFragment : Fragment() {
                 })
             }
         }
+
+        viewModel.showInvalidCredentialsSnackbar.observe(viewLifecycleOwner, Observer { showSnackbar ->
+            if (showSnackbar) {
+                Snackbar.make(binding.root, viewModel.errorMessage.value ?: "Error", Snackbar.LENGTH_SHORT).show()
+                viewModel.doneShowingInvalidCredentialsSnackbar()
+            }
+        })
 
         return binding.root
     }
