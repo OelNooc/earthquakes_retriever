@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Earthquakes retriever</string>
+    <string name="fecha_inicio_yyyy_mm_dd">Fecha Inicio (yyyy-MM-dd)</string>
+    <string name="fecha_t_rmino_yyyy_mm_dd">Fecha Término (yyyy-MM-dd)</string>
+    <string name="filtrar">Filtrar</string>
 </resources>

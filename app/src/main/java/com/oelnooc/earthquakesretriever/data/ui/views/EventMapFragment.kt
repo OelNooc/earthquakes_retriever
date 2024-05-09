@@ -14,32 +14,48 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.ClusterManager
 import com.oelnooc.earthquakesretriever.R
 import com.oelnooc.earthquakesretriever.data.models.EarthquakeClusterItem
 import com.oelnooc.earthquakesretriever.data.models.Feature
 import com.oelnooc.earthquakesretriever.data.ui.viewmodels.EventMapViewModel
+import com.oelnooc.earthquakesretriever.databinding.FragmentEventMapBinding
 
 class EventMapFragment : Fragment(), OnMapReadyCallback {
 
+
     private lateinit var googleMap: GoogleMap
     private lateinit var clusterManager: ClusterManager<EarthquakeClusterItem>
+    private lateinit var binding: FragmentEventMapBinding
     private val viewModel: EventMapViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_event_map, container, false)
+        binding = FragmentEventMapBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-    }
 
+        binding.apply {
+            map.viewTreeObserver.addOnGlobalLayoutListener {
+                val mapFragment =
+                    childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+                mapFragment?.getMapAsync(this@EventMapFragment)
+            }
+
+            filterBtn.setOnClickListener {
+                val startDate = startDateEt.text.toString().trim()
+                val endDate = endDateEt.text.toString().trim()
+                viewModel.filterEarthquakesByDate(startDate, endDate)
+                Log.d("click", "me has clickeado")
+            }
+        }
+    }
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
@@ -61,24 +77,19 @@ class EventMapFragment : Fragment(), OnMapReadyCallback {
             override fun getInfoContents(marker: Marker): View {
                 val earthquake = marker.tag as? Feature ?: return View(requireContext())
 
-                val view = layoutInflater.inflate(R.layout.custom_info_window, null)
+                val infoWindowView = layoutInflater.inflate(R.layout.custom_info_window, null)
 
-                val magnitud = "Magnitud: ${earthquake.properties.mag}"
+                val titleTextView = infoWindowView.findViewById<TextView>(R.id.titleTextView)
+                val magnitudeTextView = infoWindowView.findViewById<TextView>(R.id.magnitudeTextView)
+                val depthTextView = infoWindowView.findViewById<TextView>(R.id.depthTextView)
+                val locationTextView = infoWindowView.findViewById<TextView>(R.id.locationTextView)
 
-                val profundidad = "Profundidad: ${earthquake.properties.dMin} km"
+                titleTextView.text = earthquake.properties.title
+                magnitudeTextView.text = "Magnitud: ${earthquake.properties.mag}"
+                depthTextView.text = "Profundidad: ${earthquake.properties.dMin} km"
+                locationTextView.text = "Lugar: ${earthquake.properties.place}"
 
-                val place = "Lugar: ${earthquake.properties.place}"
-
-                Log.d("Magnitud", earthquake.properties.mag.toString())
-                Log.d("profundidad", earthquake.properties.dMin.toString())
-                Log.d("lugar", earthquake.properties.place)
-
-                view.findViewById<TextView>(R.id.titleTextView).text = earthquake.properties.title
-                view.findViewById<TextView>(R.id.magnitudeTextView).text = magnitud
-                view.findViewById<TextView>(R.id.depthTextView).text = profundidad
-                view.findViewById<TextView>(R.id.locationTextView).text = place
-
-                return view
+                return infoWindowView
             }
         })
 
@@ -89,15 +100,27 @@ class EventMapFragment : Fragment(), OnMapReadyCallback {
         for (feature in features) {
             val geometry = feature.geometry
             val location = LatLng(geometry.coordinates[1], geometry.coordinates[0])
-            val clusterItem = EarthquakeClusterItem(location,
+            val clusterItem = EarthquakeClusterItem(
+                location,
                 feature.properties.mag,
                 feature.properties.title,
                 feature.properties.dMin,
-                feature.properties.place)
+                feature.properties.place
+            )
+
+            val markerOptions = MarkerOptions()
+                .position(location)
+                .title(feature.properties.title)
+                .snippet("Magnitud: ${feature.properties.mag}")
+
+            val marker = googleMap.addMarker(markerOptions)
+            marker?.tag = feature
+
+            marker?.showInfoWindow()
+
             clusterManager.addItem(clusterItem)
         }
 
         clusterManager.cluster()
     }
-
 }
