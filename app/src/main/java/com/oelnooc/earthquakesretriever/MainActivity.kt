@@ -13,13 +13,5 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val service = EarthquakeClient.getInstance()
-
-        lifecycleScope.launch{
-            val registros = service.getData("geojson", "2020-01-01", "2020-01-02")
-            Log.d("registro", registros.toString())
-            println(registros)
-        }
     }
 }

@@ -52,7 +52,6 @@ class EventMapFragment : Fragment(), OnMapReadyCallback {
                 val startDate = startDateEt.text.toString().trim()
                 val endDate = endDateEt.text.toString().trim()
                 viewModel.filterEarthquakesByDate(startDate, endDate)
-                Log.d("click", "me has clickeado")
             }
         }
     }
@@ -97,7 +96,12 @@ class EventMapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addEarthquakesToMap(features: List<Feature>) {
-        for (feature in features) {
+        val maxItemsToProcess = 20
+        var count = 0
+
+        do {
+            val feature = features[count]
+
             val geometry = feature.geometry
             val location = LatLng(geometry.coordinates[1], geometry.coordinates[0])
             val clusterItem = EarthquakeClusterItem(
@@ -119,7 +123,9 @@ class EventMapFragment : Fragment(), OnMapReadyCallback {
             marker?.showInfoWindow()
 
             clusterManager.addItem(clusterItem)
-        }
+
+            count++
+        } while (count < features.size && count < maxItemsToProcess)
 
         clusterManager.cluster()
     }
