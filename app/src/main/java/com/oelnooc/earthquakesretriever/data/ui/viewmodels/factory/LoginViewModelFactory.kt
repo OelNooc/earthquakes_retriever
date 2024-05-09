@@ -1,8 +1,9 @@
-package com.oelnooc.earthquakesretriever.data.ui.viewmodels
+package com.oelnooc.earthquakesretriever.data.ui.viewmodels.factory
 
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.oelnooc.earthquakesretriever.data.ui.viewmodels.LoginViewModel
 
 class LoginViewModelFactory(private val sharedPreferences: SharedPreferences) : ViewModelProvider.Factory {
 

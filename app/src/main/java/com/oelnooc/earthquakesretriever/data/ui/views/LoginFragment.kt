@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.oelnooc.earthquakesretriever.R
 import com.oelnooc.earthquakesretriever.data.ui.viewmodels.LoginViewModel
-import com.oelnooc.earthquakesretriever.data.ui.viewmodels.LoginViewModelFactory
+import com.oelnooc.earthquakesretriever.data.ui.viewmodels.factory.LoginViewModelFactory
 import com.oelnooc.earthquakesretriever.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
